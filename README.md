@@ -9,6 +9,8 @@ At the start of config.def.h, include your desired theme from the themes folder.
 
 After that comment out the following lines:
 ```C
+static const char *fonts[]          = { "Fantasque Sans Mono:style=bold:size=16", "Symbols Nerd Font Mono:size=12" };
+static const char dmenufont[]       = "Fantasque Sans Mono:style=bold:size=16";
 static const char col_gray1[]       = "#222222";
 static const char col_gray2[]       = "#444444";
 static const char col_gray3[]       = "#bbbbbb";
