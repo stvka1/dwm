@@ -1,3 +1,6 @@
+static const char *fonts[]          = { "Fantasque Sans Mono:style=bold:size=16", "Symbols Nerd Font Mono:size=12" };
+static const char dmenufont[]       = "Fantasque Sans Mono:style=bold:size=16";
+
 static const char col_gray1[]       = "#1e2326"; // Unfocused tag background
 static const char col_gray2[]       = "#83c092"; // Unfocused window border
 static const char col_gray3[]       = "#d3c6aa"; // Unfocused tag foreground
