@@ -1,0 +1,92 @@
+diff --git a/Makefile b/Makefile
+index 458c524..673af0f 100644
+--- a/Makefile
++++ b/Makefile
+@@ -23,12 +23,12 @@ stest: stest.o
+ 	$(CC) -o $@ stest.o $(LDFLAGS)
+ 
+ clean:
+-	rm -f dmenu stest $(OBJ) dmenu-$(VERSION).tar.gz
++	rm -f dmenu stest $(OBJ) dmenu-$(VERSION).tar.gz config.h
+ 
+ dist: clean
+ 	mkdir -p dmenu-$(VERSION)
+ 	cp LICENSE Makefile README arg.h config.def.h config.mk dmenu.1\
+-		drw.h util.h dmenu_path dmenu_run stest.1 $(SRC)\
++		drw.h util.h dmenu_path dmenu_path_desktop dmenu_run dmenu_run_desktop stest.1 $(SRC)\
+ 		dmenu-$(VERSION)
+ 	tar -cf dmenu-$(VERSION).tar dmenu-$(VERSION)
+ 	gzip dmenu-$(VERSION).tar
+@@ -36,10 +36,12 @@ dist: clean
+ 
+ install: all
+ 	mkdir -p $(DESTDIR)$(PREFIX)/bin
+-	cp -f dmenu dmenu_path dmenu_run stest $(DESTDIR)$(PREFIX)/bin
++	cp -f dmenu dmenu_path dmenu_path_desktop dmenu_run dmenu_run_desktop stest $(DESTDIR)$(PREFIX)/bin
+ 	chmod 755 $(DESTDIR)$(PREFIX)/bin/dmenu
+ 	chmod 755 $(DESTDIR)$(PREFIX)/bin/dmenu_path
++	chmod 755 $(DESTDIR)$(PREFIX)/bin/dmenu_path_desktop
+ 	chmod 755 $(DESTDIR)$(PREFIX)/bin/dmenu_run
++	chmod 755 $(DESTDIR)$(PREFIX)/bin/dmenu_run_desktop
+ 	chmod 755 $(DESTDIR)$(PREFIX)/bin/stest
+ 	mkdir -p $(DESTDIR)$(MANPREFIX)/man1
+ 	sed "s/VERSION/$(VERSION)/g" < dmenu.1 > $(DESTDIR)$(MANPREFIX)/man1/dmenu.1
+@@ -50,7 +52,9 @@ install: all
+ uninstall:
+ 	rm -f $(DESTDIR)$(PREFIX)/bin/dmenu\
+ 		$(DESTDIR)$(PREFIX)/bin/dmenu_path\
++		$(DESTDIR)$(PREFIX)/bin/dmenu_path_desktop\
+ 		$(DESTDIR)$(PREFIX)/bin/dmenu_run\
++		$(DESTDIR)$(PREFIX)/bin/dmenu_run_desktop\
+ 		$(DESTDIR)$(PREFIX)/bin/stest\
+ 		$(DESTDIR)$(MANPREFIX)/man1/dmenu.1\
+ 		$(DESTDIR)$(MANPREFIX)/man1/stest.1
+diff --git a/config.def.h b/config.def.h
+index 1edb647..ad70a45 100644
+--- a/config.def.h
++++ b/config.def.h
+@@ -1,7 +1,7 @@
+ /* See LICENSE file for copyright and license details. */
+ /* Default settings; can be overriden by command line. */
+ 
+-static int topbar = 1;                      /* -b  option; if 0, dmenu appears at bottom     */
++static int topbar = 0;                      /* -b  option; if 0, dmenu appears at bottom     */
+ /* -fn option overrides fonts[0]; default X11 font or font set */
+ static const char *fonts[] = {
+ 	"monospace:size=10"
+diff --git a/dmenu_path_desktop b/dmenu_path_desktop
+new file mode 100755
+index 0000000..5ff74b3
+--- /dev/null
++++ b/dmenu_path_desktop
+@@ -0,0 +1,22 @@
++#!/bin/sh
++
++cachedir="${XDG_CACHE_HOME:-"$HOME/.cache"}"
++cache="$cachedir/dmenu_run_desktop"
++
++[ ! -e "$cachedir" ] && mkdir -p "$cachedir"
++
++dirs=""
++IFS=:
++for dir in "${XDG_DATA_DIRS:-"/usr/local/share:/usr/share:/var/lib/flatpak/exports/share/applications"}"; do
++       dirs="${dirs}:${dir}/applications"
++done;
++
++# Flatpak applications directories
++dirs="${dirs}:/var/lib/flatpak/exports/share/applications"
++dirs="${dirs}:${HOME}/.local/share/flatpak/exports/share/applications"
++
++if stest -dqr -n "$cache" $PATH; then
++       stest -fl $dirs | grep -v 'mimeinfo.cache' | sed 's/\.[^./]*$//' | sort -u | tee "$cache"
++else
++       cat "$cache"
++fi
+diff --git a/dmenu_run_desktop b/dmenu_run_desktop
+new file mode 100755
+index 0000000..a90aceb
+--- /dev/null
++++ b/dmenu_run_desktop
+@@ -0,0 +1,2 @@
++#!/bin/sh
++dmenu_path_desktop | dmenu "$@" | xargs gtk-launch &

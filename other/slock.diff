@@ -1,0 +1,28 @@
+diff --git a/Makefile b/Makefile
+index 6d74b21..71b03ba 100644
+--- a/Makefile
++++ b/Makefile
+@@ -20,7 +20,7 @@ slock: ${OBJ}
+ 	${CC} -o $@ ${OBJ} ${LDFLAGS}
+ 
+ clean:
+-	rm -f slock ${OBJ} slock-${VERSION}.tar.gz
++	rm -f slock ${OBJ} slock-${VERSION}.tar.gz config.h
+ 
+ dist: clean
+ 	mkdir -p slock-${VERSION}
+diff --git a/config.def.h b/config.def.h
+index 9855e21..b494f34 100644
+--- a/config.def.h
++++ b/config.def.h
+@@ -4,8 +4,8 @@ static const char *group = "nogroup";
+ 
+ static const char *colorname[NUMCOLS] = {
+ 	[INIT] =   "black",     /* after initialization */
+-	[INPUT] =  "#005577",   /* during input */
+-	[FAILED] = "#CC3333",   /* wrong password */
++	[INPUT] =  "#8EC07C",   /* during input */
++	[FAILED] = "#689D6A",   /* wrong password */
+ };
+ 
+ /* treat a cleared input like a wrong password (color) */
