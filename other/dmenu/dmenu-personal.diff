@@ -56,10 +56,10 @@ index 1edb647..ad70a45 100644
  	"monospace:size=10"
 diff --git a/dmenu_path_desktop b/dmenu_path_desktop
 new file mode 100755
-index 0000000..5ff74b3
+index 0000000..c3ac265
 --- /dev/null
 +++ b/dmenu_path_desktop
-@@ -0,0 +1,22 @@
+@@ -0,0 +1,25 @@
 +#!/bin/sh
 +
 +cachedir="${XDG_CACHE_HOME:-"$HOME/.cache"}"
@@ -69,18 +69,21 @@ index 0000000..5ff74b3
 +
 +dirs=""
 +IFS=:
-+for dir in "${XDG_DATA_DIRS:-"/usr/local/share:/usr/share:/var/lib/flatpak/exports/share/applications"}"; do
-+       dirs="${dirs}:${dir}/applications"
++for dir in "${XDG_DATA_DIRS:-"/usr/local/share:/usr/share"}"; do
++	dirs="${dirs}:${dir}/applications"
 +done;
++
++# User applications directory
++dirs="${dirs}:${HOME}/.local/share/applications"
 +
 +# Flatpak applications directories
 +dirs="${dirs}:/var/lib/flatpak/exports/share/applications"
 +dirs="${dirs}:${HOME}/.local/share/flatpak/exports/share/applications"
 +
 +if stest -dqr -n "$cache" $PATH; then
-+       stest -fl $dirs | grep -v 'mimeinfo.cache' | sed 's/\.[^./]*$//' | sort -u | tee "$cache"
++	stest -fl $dirs | grep -v 'mimeinfo.cache' | sed 's/\.[^./]*$//' | sort -u | tee "$cache"
 +else
-+       cat "$cache"
++	cat "$cache"
 +fi
 diff --git a/dmenu_run_desktop b/dmenu_run_desktop
 new file mode 100755
